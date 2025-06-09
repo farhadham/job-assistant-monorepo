@@ -1,5 +1,5 @@
 {
-	"name": "job-assistant-imagine",
+	"name": "job-assistant-monorepo",
 	"private": true,
 	"scripts": {
 		"build": "turbo run build",
