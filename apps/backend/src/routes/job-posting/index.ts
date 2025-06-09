@@ -2,7 +2,6 @@ import { Hono } from "hono";
 
 import { zValidator } from "../../utils";
 import { selectUser } from "../user/services";
-import { getApplicationStatus, logApplicationToImagine } from "./clients";
 import { getGeminiPredictResult, prepareResumeFile } from "./controllers";
 import {
 	deleteJobPosting,
@@ -86,37 +85,7 @@ const jobPostingRoute = new Hono()
 
 			const selectedJobPostings = await selectAppliedJobPostings(queries);
 
-			//* Related to Imagine
-			const imagineApplicationIds = selectedJobPostings
-				.map((item) => item.imagineApplicationId)
-				.filter((item): item is string => item !== null);
-
-			// Getting statuses for each of available applied jobs from imagine database
-			const statuses =
-				imagineApplicationIds.length > 0
-					? await getApplicationStatus(
-							imagineApplicationIds,
-							selectedUser.email,
-						)
-					: [];
-
-			const statusMap = new Map(
-				statuses.map((status) => [status.rowId, status]),
-			);
-
-			const result = selectedJobPostings.map((item) => {
-				const status = item.imagineApplicationId
-					? statusMap.get(item.imagineApplicationId)
-					: null;
-
-				return {
-					...item,
-					imagineCoachComment: status?.comment ?? null,
-					imagineApplicationStatus: status?.status ?? null,
-				};
-			});
-
-			return c.json(result, 200);
+			return c.json(selectedJobPostings, 200);
 		},
 	)
 	.post(
@@ -275,23 +244,9 @@ const jobPostingRoute = new Hono()
 			const selectedResumeContent =
 				selectedUser[`resumeContent${payload.resumeNumber}`];
 
-			//* for Imagine
-			const rowNumberResult = await logApplicationToImagine(
-				selectedUser.email,
-				{
-					recruiter: payload.recruiter,
-					email: selectedUser.email,
-					companyName: selectedJobPosting.jobPosting.companyName,
-					title: selectedJobPosting.jobPosting.title,
-					url: selectedJobPosting.jobPosting.url,
-					applicationScore: selectedJobPosting.jobPostingAnalyze.overallMatch,
-				},
-			);
-
 			await updateJobPostingToApplied(id, {
 				payload,
 				resumeContent: selectedResumeContent!,
-				rowNumber: rowNumberResult.rowNumber,
 			});
 
 			return c.json({ message: "Success" }, 200);
@@ -311,15 +266,11 @@ const jobPostingRoute = new Hono()
 				return c.json({ error: "Your profile is not complete" }, 401);
 			}
 
-			const updatedRow = await updateJobPostingApplicationStatus(
-				id,
-				payload,
-				selectedUser.email,
-			);
-			if (updatedRow === false)
+			const updatedRow = await updateJobPostingApplicationStatus(id, payload);
+			if (!updatedRow)
 				return c.json(
 					{
-						error: "Job posting doesn't exist or something happened on imagine",
+						error: "Job posting doesn't exist",
 					},
 					404,
 				);

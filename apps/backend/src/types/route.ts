@@ -20,13 +20,3 @@ export type JobPostingAnalyzeType = InferSelectModel<
 >;
 
 export type AvailableResumeListType = (typeof availableResumeList)[number];
-export type ImagineBridgeApiStatusType = {
-	rowId: string;
-	email: string;
-	status: string;
-	comment: string;
-}[];
-
-export type ImagineBridgeApiInsertedRowType = {
-	rowNumber: string;
-};

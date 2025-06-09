@@ -9,7 +9,6 @@ import PostingCardDetails from "../../common/posting-card-details";
 
 import type { getAppliedJobPostings } from "../../../services/job-posting";
 import ApplicationStatus from "./application-status";
-import ImagineDetails from "./imagine-details";
 import JobDescription from "./job-description";
 import UsedCoverLetter from "./used-cover-letter";
 import UsedResume from "./used-resume";
@@ -28,9 +27,6 @@ export const HomeItemCard = ({
 		jobOfferAt,
 		rejectedAt,
 		applyComment,
-		imagineApplicationStatus,
-		imagineApplicationId,
-		imagineCoachComment,
 	} = data;
 
 	return (
@@ -44,14 +40,6 @@ export const HomeItemCard = ({
 						<span className="text-sm whitespace-pre">{applyComment}</span>
 					) : null}
 				</p>
-
-				<ImagineDetails
-					data={{
-						imagineApplicationStatus,
-						imagineApplicationId,
-						imagineCoachComment,
-					}}
-				/>
 			</div>
 
 			<div className="flex items-end gap-4 p-4">

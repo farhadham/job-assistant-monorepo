@@ -27,7 +27,6 @@ export const jobPostingTable = sqliteTable("job_posting", {
 		.notNull(),
 	usedResumeContent: text("used_resume_content"),
 	usedCoverLetterContent: text("used_cover_letter_content"),
-	imagineApplicationId: text("imagine_application_id"),
 	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 

@@ -33,7 +33,6 @@ CREATE TABLE `job_posting` (
 	`is_deleted` integer DEFAULT false NOT NULL,
 	`used_resume_content` text,
 	`used_cover_letter_content` text,
-	`imagine_application_id` text,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint

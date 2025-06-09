@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "81b0cde6-cf29-4e70-ac66-b7e93eadfa49",
+  "id": "0d8e6a88-4722-4247-91c4-ad9314a55782",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "job_posting_analyze": {
@@ -242,13 +242,6 @@
         },
         "used_cover_letter_content": {
           "name": "used_cover_letter_content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "imagine_application_id": {
-          "name": "imagine_application_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

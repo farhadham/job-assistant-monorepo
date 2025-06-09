@@ -16,7 +16,6 @@ import {
 	jobPostingTable,
 	userTable,
 } from "../../database/schema";
-import { updateApplicationStatusToImagine } from "./clients";
 import type {
 	CreateJobPostingRequestType,
 	GetAppliedJobsQueryType,
@@ -125,7 +124,6 @@ export const selectAppliedJobPostings = async (
 			overallMatch: jobPostingAnalyzeTable.overallMatch,
 			postingLanguage: jobPostingAnalyzeTable.postingLanguage,
 			relocationAvailable: jobPostingAnalyzeTable.relocationAvailable,
-			imagineApplicationId: jobPostingTable.imagineApplicationId,
 		})
 		.from(jobPostingTable)
 		.where(
@@ -165,7 +163,6 @@ export const updateJobPostingToApplied = (
 	data: {
 		payload: MarkAsAppliedRequestType;
 		resumeContent: string | null;
-		rowNumber: string;
 	},
 ) => {
 	return db
@@ -175,7 +172,6 @@ export const updateJobPostingToApplied = (
 			usedCoverLetterContent: data.payload.isCoverLetterUsed ? undefined : null, // If cover letter is not used we delete the content from db
 			usedResumeContent: data.resumeContent,
 			recruiter: data.payload.recruiter,
-			imagineApplicationId: data.rowNumber,
 			applyComment: data.payload.applyComment,
 		})
 		.where(eq(jobPostingTable.id, id));
@@ -184,23 +180,13 @@ export const updateJobPostingToApplied = (
 export const updateJobPostingApplicationStatus = async (
 	id: number,
 	payload: UpdateApplicationStatusRequestType,
-	userEmail: string,
 ) => {
-	return db.transaction(async (tx) => {
-		const updatedData = await tx
-			.update(jobPostingTable)
-			.set(payload)
-			.where(eq(jobPostingTable.id, id))
-			.returning({ imagineApplicationId: jobPostingTable.imagineApplicationId })
-			.then((rows) => rows.at(0));
-
-		if (!updatedData?.imagineApplicationId) return false;
-
-		await updateApplicationStatusToImagine(userEmail, {
-			...payload,
-			rowId: updatedData.imagineApplicationId,
-		});
-	});
+	return db
+		.update(jobPostingTable)
+		.set(payload)
+		.where(eq(jobPostingTable.id, id))
+		.returning({ id: jobPostingTable.id })
+		.then((rows) => rows.at(0));
 };
 
 export const deleteJobPosting = (id: number) => {
